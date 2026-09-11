@@ -23,6 +23,7 @@ export interface MessagePushEvent {
   conversationId: string;
   contactId: string;
   contactName?: string;
+  contactAvatarUrl?: string | null;
   senderType: 'customer' | 'user' | 'system';
   senderUserId?: string | null;
   assignedAgentId?: string | null;

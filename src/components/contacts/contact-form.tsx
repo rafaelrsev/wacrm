@@ -55,6 +55,7 @@ export function ContactForm({
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
   const [saving, setSaving] = useState(false);
 
   // Duplicate-phone detection for NEW contacts. `exact` (same digits)
@@ -76,6 +77,7 @@ export function ContactForm({
       setPhone(contact?.phone ?? '');
       setEmail(contact?.email ?? '');
       setCompany(contact?.company ?? '');
+      setAvatarUrl(contact?.avatar_url ?? '');
       setSelectedTagIds(contactTags.map((ct) => ct.tag_id));
       setDupMatch(null);
       fetchTags();
@@ -157,6 +159,7 @@ export function ContactForm({
             phone: phone.trim(),
             email: email.trim() || null,
             company: company.trim() || null,
+            avatar_url: avatarUrl.trim() || null,
             updated_at: new Date().toISOString(),
           })
           .eq('id', contactId);
@@ -171,6 +174,7 @@ export function ContactForm({
             phone: phone.trim(),
             email: email.trim() || null,
             company: company.trim() || null,
+            avatar_url: avatarUrl.trim() || null,
           })
           .select('id')
           .single();
@@ -246,6 +250,29 @@ export function ContactForm({
               placeholder={t('namePlaceholder')}
               className="bg-muted border-border text-foreground placeholder:text-muted-foreground"
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="cf-avatar" className="text-muted-foreground">
+              URL da Foto de Perfil (Avatar)
+            </Label>
+            <div className="flex gap-3 items-center">
+              {avatarUrl.trim() ? (
+                <img
+                  src={avatarUrl.trim()}
+                  alt="Avatar Preview"
+                  className="size-9 rounded-full object-cover shrink-0 border border-border bg-muted"
+                  onError={(e) => (e.currentTarget.style.display = 'none')}
+                />
+              ) : null}
+              <Input
+                id="cf-avatar"
+                value={avatarUrl}
+                onChange={(e) => setAvatarUrl(e.target.value)}
+                placeholder="https://exemplo.com/foto.jpg"
+                className="bg-muted border-border text-foreground placeholder:text-muted-foreground flex-1"
+              />
+            </div>
           </div>
 
           <div className="space-y-2">

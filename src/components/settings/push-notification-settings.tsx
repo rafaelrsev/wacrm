@@ -492,7 +492,7 @@ export function PushNotificationSettings() {
           <p className="font-semibold text-foreground">💡 Esclarecimento sobre a Chave SSL vs VAPID:</p>
           <ul className="list-disc list-inside space-y-1">
             <li>
-              <strong>Chave SSL (Let&apos;s Encrypt da Hostinger)</strong>: Criptografa o seu site HTTPS (<code>https://crm.rsev.cloud</code>). O SSL é a porta de entrada obrigatória para qualquer navegador permitir PWA e Service Worker.
+              <strong>Chave SSL (Let&apos;s Encrypt da Hostinger)</strong>: Criptografa o seu site HTTPS. O SSL é a porta de entrada obrigatória para qualquer navegador permitir PWA e Service Worker.
             </li>
             <li>
               <strong>Chaves VAPID</strong>: São as chaves específicas do protocolo Web Push para que os servidores da Apple (APNs) e Google (FCM) aceitem os envios de notificações do seu CRM.

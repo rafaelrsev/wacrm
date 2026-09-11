@@ -42,7 +42,8 @@ export async function resolveConversationByPhone(
   db: SupabaseClient,
   accountId: string,
   phone: string,
-  name?: string | null
+  name?: string | null,
+  avatarUrl?: string | null
 ): Promise<ResolvedConversation> {
   const sanitized = sanitizePhoneForMeta(phone);
   if (!isValidE164(sanitized)) {
@@ -91,10 +92,18 @@ export async function resolveConversationByPhone(
   const existing = await findExistingContact(db, accountId, sanitized);
   if (existing) {
     contactId = existing.id;
+    const updates: Record<string, unknown> = {};
     if (name && name !== existing.name) {
+      updates.name = name;
+    }
+    if (avatarUrl && avatarUrl !== existing.avatar_url) {
+      updates.avatar_url = avatarUrl;
+    }
+    if (Object.keys(updates).length > 0) {
+      updates.updated_at = new Date().toISOString();
       await db
         .from('contacts')
-        .update({ name, updated_at: new Date().toISOString() })
+        .update(updates)
         .eq('id', existing.id);
     }
   } else {
@@ -105,6 +114,7 @@ export async function resolveConversationByPhone(
         user_id: ownerUserId,
         phone: sanitized,
         name: name || sanitized,
+        avatar_url: avatarUrl || null,
       })
       .select('id')
       .single();

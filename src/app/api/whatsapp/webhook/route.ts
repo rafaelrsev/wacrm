@@ -886,6 +886,7 @@ async function processMessage(
     conversationId: conversation.id,
     contactId: contactRecord.id,
     contactName: contactRecord.name || contactName || senderPhone,
+    contactAvatarUrl: contactRecord.avatar_url ?? null,
     senderType: 'customer',
     messageText: inboundText || `[${message.type}]`,
     assignedAgentId: conversation.assigned_agent_id ?? null,

@@ -130,7 +130,7 @@ export async function sendPushForMessageEvent(
         title,
         body,
         url,
-        icon: '/icon-192x192.png',
+        icon: event.contactAvatarUrl || '/icon-192x192.png',
         badge: '/icon-192x192.png',
         tag: `conv-${event.conversationId}`,
         sound: pref.sound_enabled,
