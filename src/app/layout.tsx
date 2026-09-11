@@ -22,16 +22,23 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "wacrm",
-    template: "%s — wacrm",
+    default: "WACRM - WhatsApp CRM",
+    template: "%s — WACRM",
   },
-  description: "Self-hostable CRM template for WhatsApp.",
+  description: "CRM e Inbox Compartilhado para WhatsApp.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "WACRM",
+  },
   robots: {
     index: false,
     follow: false,
   },
   icons: {
-    icon: [{ url: "/icon" }],
+    icon: [{ url: "/icon-192x192.png" }, { url: "/icon.svg" }],
+    apple: [{ url: "/apple-touch-icon.png" }],
   },
   formatDetection: {
     email: false,
@@ -41,7 +48,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#020617",
+  themeColor: "#0f172a",
   colorScheme: "dark light",
 };
 

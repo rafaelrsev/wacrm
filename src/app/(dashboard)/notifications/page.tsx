@@ -5,11 +5,12 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import type { Notification } from "@/types";
-import { Bell, CheckCheck, Loader2, UserPlus } from "lucide-react";
+import { Bell, CheckCheck, Loader2, Smartphone, UserPlus } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { usePushNotifications } from "@/hooks/use-push-notifications";
 
 // Icon per notification type. Only one type exists today
 // (conversation_assigned) but this keeps future types a one-line add.
@@ -20,6 +21,7 @@ const TYPE_ICON: Record<Notification["type"], typeof Bell> = {
 export default function NotificationsPage() {
   const router = useRouter();
   const { accountId } = useAuth();
+  const { isSubscribed, subscribe, loading: pushLoading } = usePushNotifications();
   const [notifications, setNotifications] = useState<Notification[] | null>(
     null,
   );
@@ -183,6 +185,39 @@ export default function NotificationsPage() {
           )}
           Mark all as read
         </Button>
+      </div>
+
+      {/* PWA Mobile Push Card Banner */}
+      <div className="flex items-center justify-between rounded-xl border border-primary/20 bg-primary/5 p-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <Smartphone className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-foreground">Notificações Push no Celular / PWA</h3>
+            <p className="text-xs text-muted-foreground">
+              {isSubscribed
+                ? "Notificações push estão ativadas neste dispositivo."
+                : "Ative os avisos push para receber alertas quando chegar novas mensagens ou conversas."}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {!isSubscribed && (
+            <Button size="sm" onClick={subscribe} disabled={pushLoading} className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white">
+              {pushLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bell className="h-4 w-4" />}
+              Ativar Aviso
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.push('/settings?tab=push-notifications')}
+            className="text-xs"
+          >
+            Configurar Regras
+          </Button>
+        </div>
       </div>
 
       {notifications.length === 0 ? (

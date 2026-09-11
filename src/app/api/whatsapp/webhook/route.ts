@@ -15,6 +15,7 @@ import {
   handleTemplateWebhookChange,
   isTemplateWebhookField,
 } from '@/lib/whatsapp/template-webhook'
+import { sendPushForMessageEvent } from '@/lib/push/send-push'
 
 // The `after()` callback in POST runs within this route's max duration.
 // Inbound processing can fan out to per-media Meta verification calls, so
@@ -879,6 +880,17 @@ async function processMessage(
       configOwnerUserId,
     })
   }
+
+  // Trigger Web Push notifications to qualified team members
+  await sendPushForMessageEvent(accountId, {
+    conversationId: conversation.id,
+    contactId: contactRecord.id,
+    contactName: contactRecord.name || contactName || senderPhone,
+    senderType: 'customer',
+    messageText: inboundText || `[${message.type}]`,
+    assignedAgentId: conversation.assigned_agent_id ?? null,
+    isUnattended: !conversation.assigned_agent_id,
+  }).catch((err) => console.error('[push] webhook dispatch failed:', err))
 
   // message.received webhook (public API). Awaited — not fire-and-forget
   // — because we're inside the route's `after()` block, which only keeps

@@ -10,6 +10,7 @@ import { SettingsRail } from '@/components/settings/settings-rail';
 import { SettingsOverview } from '@/components/settings/settings-overview';
 import { ProfileForm } from '@/components/settings/profile-form';
 import { SecurityPanel } from '@/components/settings/security-panel';
+import { PushNotificationSettings } from '@/components/settings/push-notification-settings';
 import { AppearancePanel } from '@/components/settings/appearance-panel';
 import { WhatsAppConfig } from '@/components/settings/whatsapp-config';
 import { TemplateManager } from '@/components/settings/template-manager';
@@ -73,6 +74,7 @@ function SettingsPageInner() {
     overview: <SettingsOverview onSelect={go} />,
     profile: <ProfileForm />,
     security: <SecurityPanel />,
+    'push-notifications': <PushNotificationSettings />,
     appearance: <AppearancePanel />,
     whatsapp: <WhatsAppConfig />,
     templates: <TemplateManager />,
