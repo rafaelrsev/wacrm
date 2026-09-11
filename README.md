@@ -139,6 +139,44 @@ Full walkthrough with screenshots:
 > (Vercel, Railway, your own VPS). Hostinger is recommended, not
 > required._
 
+## 📱 Personalização PWA & Gerador de Chaves VAPID
+
+Sempre que for implementar o CRM para uma nova empresa, você pode personalizar o nome do PWA, os ícones e gerar novas chaves VAPID para as notificações push no arquivo `.env` (ou no painel de variáveis da Hostinger).
+
+### 1. Gerando Novas Chaves VAPID (Web Push)
+Para que as notificações Push (PWA) funcionem com chaves exclusivas para a nova empresa:
+
+```bash
+npm run generate-vapid
+```
+
+O comando gerará e exibirá no terminal as chaves no formato correto. Basta copiar e colar no `.env`:
+
+```env
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=SuaChavePublicaGerada...
+VAPID_PRIVATE_KEY=SuaChavePrivadaGerada...
+VAPID_SUBJECT=mailto:suporte@rsev.cloud
+```
+
+> **Nota de Segurança:** A chave `VAPID_PRIVATE_KEY` é estritamente confidencial e não é exposta na interface do frontend.
+
+### 2. Personalizando Nome e Ícones do PWA
+Defina o nome que aparecerá na tela inicial do celular (Android/iPhone) e os ícones diretamente no `.env`:
+
+```env
+# Nome do Aplicativo no PWA e no navegador
+NEXT_PUBLIC_PWA_NAME="Empresa X - CRM WhatsApp"
+NEXT_PUBLIC_PWA_SHORT_NAME="EmpresaCRM"
+NEXT_PUBLIC_PWA_DESCRIPTION="CRM e Inbox Compartilhado para WhatsApp"
+
+# Caminho dos ícones (na pasta /public)
+NEXT_PUBLIC_PWA_ICON="/icon-192x192.png"
+NEXT_PUBLIC_PWA_ICON_512="/icon-512x512.png"
+NEXT_PUBLIC_PWA_APPLE_ICON="/apple-touch-icon.png"
+```
+
+---
+
 ## Documentation
 
 Full self-host documentation — Supabase migrations, WhatsApp Business

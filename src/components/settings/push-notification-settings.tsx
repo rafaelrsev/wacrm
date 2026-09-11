@@ -51,7 +51,6 @@ export function PushNotificationSettings() {
   const [vapidInfo, setVapidInfo] = useState<{
     configured: boolean;
     currentPublicKey: string | null;
-    generatedKeys: { publicKey: string; privateKey: string } | null;
   } | null>(null);
   const [loadingVapid, setLoadingVapid] = useState<boolean>(false);
 
@@ -470,10 +469,10 @@ export function PushNotificationSettings() {
         <div className="flex items-center justify-between border-b border-border pb-3">
           <div>
             <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-              <Lock className="h-4 w-4 text-primary" /> Chaves VAPID & Servidor Hostinger
+              <Lock className="h-4 w-4 text-primary" /> Status do Servidor VAPID
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Instruções de configuração das chaves de criptografia Web Push.
+              Status da configuração do protocolo de autenticação Web Push.
             </p>
           </div>
           {vapidInfo?.configured ? (
@@ -489,83 +488,16 @@ export function PushNotificationSettings() {
 
         {/* SSL vs VAPID Explanation */}
         <div className="rounded-lg bg-muted/40 p-4 space-y-2 text-xs text-muted-foreground leading-relaxed">
-          <p className="font-semibold text-foreground">💡 Esclarecimento sobre a Chave SSL vs VAPID:</p>
+          <p className="font-semibold text-foreground">💡 Esclarecimento sobre SSL & VAPID:</p>
           <ul className="list-disc list-inside space-y-1">
             <li>
-              <strong>Chave SSL (Let&apos;s Encrypt da Hostinger)</strong>: Criptografa o seu site HTTPS. O SSL é a porta de entrada obrigatória para qualquer navegador permitir PWA e Service Worker.
+              <strong>Chave SSL (Let&apos;s Encrypt da Hostinger)</strong>: Criptografa o seu site HTTPS. O SSL é obrigatório para qualquer navegador permitir PWA e Service Worker.
             </li>
             <li>
-              <strong>Chaves VAPID</strong>: São as chaves específicas do protocolo Web Push para que os servidores da Apple (APNs) e Google (FCM) aceitem os envios de notificações do seu CRM.
+              <strong>Chaves VAPID</strong>: São as chaves configuradas via variáveis de ambiente no arquivo <code>.env</code> do servidor para autenticação com os serviços de push da Apple (APNs) e Google (FCM).
             </li>
           </ul>
         </div>
-
-        {vapidInfo?.generatedKeys && (
-          <div className="space-y-3 pt-2">
-            <p className="text-xs font-semibold text-foreground">
-              Variáveis de Ambiente geradas para adicionar no painel da Hostinger / arquivo <code>.env</code>:
-            </p>
-
-            <div className="space-y-2 font-mono text-xs">
-              <div className="flex items-center justify-between gap-2 rounded-md bg-muted p-2 border border-border">
-                <span className="truncate">
-                  NEXT_PUBLIC_VAPID_PUBLIC_KEY={vapidInfo.generatedKeys.publicKey}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                  onClick={() =>
-                    copyToClipboard(
-                      `NEXT_PUBLIC_VAPID_PUBLIC_KEY=${vapidInfo.generatedKeys?.publicKey}`,
-                      'Chave Pública VAPID'
-                    )
-                  }
-                >
-                  <Copy className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-
-              <div className="flex items-center justify-between gap-2 rounded-md bg-muted p-2 border border-border">
-                <span className="truncate">
-                  VAPID_PRIVATE_KEY={vapidInfo.generatedKeys.privateKey}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                  onClick={() =>
-                    copyToClipboard(
-                      `VAPID_PRIVATE_KEY=${vapidInfo.generatedKeys?.privateKey}`,
-                      'Chave Privada VAPID'
-                    )
-                  }
-                >
-                  <Copy className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-
-              <div className="flex items-center justify-between gap-2 rounded-md bg-muted p-2 border border-border">
-                <span className="truncate">
-                  VAPID_SUBJECT=mailto:suporte@rsev.cloud
-                </span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                  onClick={() =>
-                    copyToClipboard(
-                      'VAPID_SUBJECT=mailto:suporte@rsev.cloud',
-                      'VAPID Subject'
-                    )
-                  }
-                >
-                  <Copy className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

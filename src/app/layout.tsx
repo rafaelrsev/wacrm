@@ -20,32 +20,41 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "WACRM - WhatsApp CRM",
-    template: "%s — WACRM",
-  },
-  description: "CRM e Inbox Compartilhado para WhatsApp.",
-  manifest: "/manifest.json",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "WACRM",
-  },
-  robots: {
-    index: false,
-    follow: false,
-  },
-  icons: {
-    icon: [{ url: "/icon-192x192.png" }, { url: "/icon.svg" }],
-    apple: [{ url: "/apple-touch-icon.png" }],
-  },
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const pwaName = process.env.NEXT_PUBLIC_PWA_NAME || "WACRM - WhatsApp CRM";
+  const pwaShortName = process.env.NEXT_PUBLIC_PWA_SHORT_NAME || "WACRM";
+  const pwaDescription =
+    process.env.NEXT_PUBLIC_PWA_DESCRIPTION || "CRM e Inbox Compartilhado para WhatsApp.";
+  const pwaIcon = process.env.NEXT_PUBLIC_PWA_ICON || "/icon-192x192.png";
+  const pwaAppleIcon = process.env.NEXT_PUBLIC_PWA_APPLE_ICON || "/apple-touch-icon.png";
+
+  return {
+    title: {
+      default: pwaName,
+      template: `%s — ${pwaShortName}`,
+    },
+    description: pwaDescription,
+    manifest: "/manifest.webmanifest",
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: pwaShortName,
+    },
+    robots: {
+      index: false,
+      follow: false,
+    },
+    icons: {
+      icon: [{ url: pwaIcon }, { url: "/icon.svg" }],
+      apple: [{ url: pwaAppleIcon }],
+    },
+    formatDetection: {
+      email: false,
+      address: false,
+      telephone: false,
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#0f172a",

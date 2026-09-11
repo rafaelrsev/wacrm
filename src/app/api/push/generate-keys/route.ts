@@ -12,15 +12,10 @@ export async function GET() {
     }
 
     const currentKeys = getVapidKeys();
-    const generated = generateVapidKeys();
 
     return NextResponse.json({
       configured: !!currentKeys,
       currentPublicKey: currentKeys?.publicKey || null,
-      generatedKeys: {
-        publicKey: generated.publicKey,
-        privateKey: generated.privateKey,
-      },
     }, { status: 200 });
   } catch (error: unknown) {
     console.error('[Push Generate Keys] Exception:', error);
