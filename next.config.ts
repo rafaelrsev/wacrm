@@ -19,6 +19,19 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
  *     deny them. A supply-chain compromise or a forgotten plugin
  *     can't silently opt back in.
  */
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+let supabaseConnectHost = "https://*.supabase.co wss://*.supabase.co";
+let supabaseMediaHost = "https://*.supabase.co";
+
+if (supabaseUrl) {
+  try {
+    const parsed = new URL(supabaseUrl);
+    const wssProtocol = parsed.protocol === "https:" ? "wss:" : "ws:";
+    supabaseConnectHost = `https://*.supabase.co wss://*.supabase.co ${parsed.origin} ${wssProtocol}//${parsed.host}`;
+    supabaseMediaHost = `https://*.supabase.co ${parsed.origin}`;
+  } catch {}
+}
+
 const SECURITY_HEADERS = [
   {
     key: "Strict-Transport-Security",
@@ -51,11 +64,11 @@ const SECURITY_HEADERS = [
       "img-src 'self' data: blob: https:",
       // Outbound media previews (blob: from MediaRecorder + file picker)
       // and Supabase public-bucket audio/video the inbox renders.
-      "media-src 'self' blob: https://*.supabase.co",
+      `media-src 'self' blob: ${supabaseMediaHost}`,
       "font-src 'self' data:",
       // Supabase REST + realtime (WSS). All Meta API calls happen
       // server-side, so graph.facebook.com does not belong here.
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+      `connect-src 'self' ${supabaseConnectHost}`,
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
