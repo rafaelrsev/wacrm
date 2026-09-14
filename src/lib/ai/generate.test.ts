@@ -11,6 +11,8 @@ function config(overrides: Partial<AiConfig> = {}): AiConfig {
     isActive: true,
     autoReplyEnabled: false,
     autoReplyMaxPerConversation: 3,
+    contextMessageLimit: 20,
+    autoReplyDelaySeconds: 0,
     handoffAgentId: null,
     embeddingsApiKey: null,
     ...overrides,
@@ -190,5 +192,32 @@ describe('generateReply — Anthropic', () => {
     const body = JSON.parse(fetchMock.mock.calls[0][1].body)
     expect(body.messages[0].role).toBe('user')
     expect(body.messages).toHaveLength(1)
+  })
+})
+
+describe('generateReply — DeepSeek', () => {
+  it('calls the DeepSeek chat completions endpoint', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      okResponse({
+        choices: [{ message: { content: 'DeepSeek response!' } }],
+        usage: { prompt_tokens: 20, completion_tokens: 5, total_tokens: 25 },
+      }),
+    )
+    vi.stubGlobal('fetch', fetchMock)
+
+    const res = await generateReply({
+      config: config({ provider: 'deepseek', model: 'deepseek-chat', apiKey: 'sk-ds-test' }),
+      systemPrompt: 'sys',
+      messages: [{ role: 'user', content: 'Hello' }],
+    })
+
+    expect(res).toEqual({
+      text: 'DeepSeek response!',
+      handoff: false,
+      usage: { promptTokens: 20, completionTokens: 5, totalTokens: 25 },
+    })
+    const [url, opts] = fetchMock.mock.calls[0]
+    expect(url).toContain('api.deepseek.com')
+    expect(opts.headers.Authorization).toBe('Bearer sk-ds-test')
   })
 })

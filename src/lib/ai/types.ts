@@ -6,7 +6,7 @@
 // whether the account is on OpenAI or Anthropic.
 // ============================================================
 
-export type AiProvider = 'openai' | 'anthropic'
+export type AiProvider = 'openai' | 'anthropic' | 'deepseek'
 
 /**
  * Account AI setup, decrypted and ready to use. Produced by
@@ -21,6 +21,10 @@ export interface AiConfig {
   isActive: boolean
   autoReplyEnabled: boolean
   autoReplyMaxPerConversation: number
+  /** How many recent text messages to include in the LLM prompt context (1-50). */
+  contextMessageLimit: number
+  /** Seconds to wait before responding to debounce rapid incoming customer messages (0-60). */
+  autoReplyDelaySeconds: number
   /** Where auto-reply hands a conversation off when the model bails: an
    *  agent's `auth.users.id`, or null to leave it unassigned (drop into
    *  the shared queue). */

@@ -13,6 +13,7 @@ import type { AiProvider } from './types'
 export const AI_PROVIDER_DEFAULT_MODEL: Record<AiProvider, string> = {
   openai: 'gpt-5.4-mini',
   anthropic: 'claude-haiku-4-5-20251001',
+  deepseek: 'deepseek-chat',
 }
 
 /**
@@ -54,8 +55,10 @@ export function buildSystemPrompt(args: {
   mode: 'draft' | 'auto_reply'
   /** Knowledge-base excerpts retrieved for the current question. */
   knowledge?: string[]
+  /** Prior conversation summary if available. */
+  aiSummary?: string | null
 }): string {
-  const { userPrompt, mode, knowledge } = args
+  const { userPrompt, mode, knowledge, aiSummary } = args
   const parts: string[] = [
     'You are a customer-messaging assistant for a business that uses a WhatsApp CRM. ' +
       'You are shown the recent WhatsApp conversation between the business (assistant) and a customer (user). ' +
@@ -70,6 +73,10 @@ export function buildSystemPrompt(args: {
     parts.push(
       `You are replying automatically with no human in the loop. If you cannot confidently and safely help — the customer explicitly asks for a human, is upset or complaining, or the request needs information you do not have — reply with exactly ${HANDOFF_SENTINEL} and nothing else. A human agent will then take over. Prefer handing off over guessing.`,
     )
+  }
+
+  if (aiSummary && aiSummary.trim()) {
+    parts.push(`Summary of prior conversation history:\n${aiSummary.trim()}`)
   }
 
   if (userPrompt && userPrompt.trim()) {

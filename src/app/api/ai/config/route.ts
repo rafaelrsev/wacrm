@@ -30,7 +30,7 @@ export async function GET() {
       // `api_key` is selected only to derive `has_key` — it is stripped
       // out below and never returned to the client.
       .select(
-        'provider, model, system_prompt, is_active, auto_reply_enabled, auto_reply_max_per_conversation, handoff_agent_id, api_key, embeddings_api_key',
+        'provider, model, system_prompt, is_active, auto_reply_enabled, auto_reply_max_per_conversation, context_message_limit, auto_reply_delay_seconds, handoff_agent_id, api_key, embeddings_api_key',
       )
       .eq('account_id', accountId)
       .maybeSingle()
@@ -78,8 +78,8 @@ export async function POST(request: Request) {
     if (!body || typeof body !== 'object') return bad('Invalid request body')
 
     const provider = body.provider as AiProvider
-    if (provider !== 'openai' && provider !== 'anthropic') {
-      return bad('provider must be "openai" or "anthropic"')
+    if (provider !== 'openai' && provider !== 'anthropic' && provider !== 'deepseek') {
+      return bad('provider must be "openai", "anthropic" or "deepseek"')
     }
     const model = typeof body.model === 'string' ? body.model.trim() : ''
     if (!model) return bad('model is required')
@@ -95,10 +95,15 @@ export async function POST(request: Request) {
     if (!Number.isFinite(maxPer)) maxPer = 3
     maxPer = Math.min(20, Math.max(1, Math.floor(maxPer)))
 
-    // Handoff routing target for auto-reply. A non-empty string must be a
-    // member of this account (else the conversation would be assigned to a
-    // stranger); an empty string / null means "leave unassigned" (the
-    // shared queue). Absent → left unchanged on update below.
+    let contextLimit = Number(body.context_message_limit)
+    if (!Number.isFinite(contextLimit)) contextLimit = 20
+    contextLimit = Math.min(50, Math.max(1, Math.floor(contextLimit)))
+
+    let delaySeconds = Number(body.auto_reply_delay_seconds)
+    if (!Number.isFinite(delaySeconds)) delaySeconds = 5
+    delaySeconds = Math.min(600, Math.max(0, Math.floor(delaySeconds)))
+
+    // Handoff routing target for auto-reply.
     const rawHandoff =
       typeof body.handoff_agent_id === 'string' ? body.handoff_agent_id.trim() : ''
     const handoffProvided = 'handoff_agent_id' in body
@@ -116,9 +121,6 @@ export async function POST(request: Request) {
 
     const rawKey = typeof body.api_key === 'string' ? body.api_key.trim() : ''
 
-    // Embeddings key (optional, for semantic KB search): a non-empty
-    // string sets/replaces it; an explicit null clears it; absent leaves
-    // it unchanged. The form only sends it when the admin edits it.
     const rawEmbeddingsKey =
       typeof body.embeddings_api_key === 'string'
         ? body.embeddings_api_key.trim()
@@ -145,10 +147,6 @@ export async function POST(request: Request) {
       return bad('api_key is required')
     }
 
-    // Only spend a provider round-trip when the credentials that affect
-    // reachability actually changed. A save that just flips a toggle or
-    // edits the system prompt on an existing, already-validated config
-    // skips the call — no wasted token/latency on the account's key.
     const credentialsChanged =
       !existing ||
       rawKey !== '' ||
@@ -165,6 +163,8 @@ export async function POST(request: Request) {
           isActive,
           autoReplyEnabled,
           autoReplyMaxPerConversation: maxPer,
+          contextMessageLimit: contextLimit,
+          autoReplyDelaySeconds: delaySeconds,
           handoffAgentId: null,
           embeddingsApiKey: null,
         })
@@ -180,8 +180,6 @@ export async function POST(request: Request) {
       }
     }
 
-    // Validate a new embeddings key before storing (a cheap 1-input
-    // embed), same "verify before save" discipline as the chat key.
     if (rawEmbeddingsKey) {
       try {
         await embedTexts(rawEmbeddingsKey, ['ping'])
@@ -205,6 +203,8 @@ export async function POST(request: Request) {
       is_active: isActive,
       auto_reply_enabled: autoReplyEnabled,
       auto_reply_max_per_conversation: maxPer,
+      context_message_limit: contextLimit,
+      auto_reply_delay_seconds: delaySeconds,
     }
     // Only touch the handoff target when the form actually sent the field,
     // so a partial save (e.g. flipping a toggle) doesn't wipe it.

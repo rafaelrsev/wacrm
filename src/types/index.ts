@@ -108,6 +108,8 @@ export interface Contact {
   email?: string;
   company?: string;
   avatar_url?: string;
+  ai_summary?: string | null;
+  ai_summary_updated_at?: string | null;
   created_at: string;
   updated_at: string;
   /** Hydrated by queries that embed `contact_tags(tags(*))` (e.g. the
@@ -181,6 +183,8 @@ export interface Conversation {
   ai_autoreply_disabled?: boolean;
   ai_reply_count?: number;
   ai_handoff_summary?: string | null;
+  ai_summary?: string | null;
+  ai_summary_updated_at?: string | null;
 }
 
 // ============================================================

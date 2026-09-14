@@ -3,19 +3,21 @@ import { decrypt } from '@/lib/whatsapp/encryption'
 import type { AiConfig } from './types'
 
 interface AiConfigRow {
-  provider: 'openai' | 'anthropic'
+  provider: 'openai' | 'anthropic' | 'deepseek'
   model: string
   api_key: string
   system_prompt: string | null
   is_active: boolean
   auto_reply_enabled: boolean
   auto_reply_max_per_conversation: number
+  context_message_limit: number
+  auto_reply_delay_seconds: number
   handoff_agent_id: string | null
   embeddings_api_key: string | null
 }
 
 const CONFIG_COLUMNS =
-  'provider, model, api_key, system_prompt, is_active, auto_reply_enabled, auto_reply_max_per_conversation, handoff_agent_id, embeddings_api_key'
+  'provider, model, api_key, system_prompt, is_active, auto_reply_enabled, auto_reply_max_per_conversation, context_message_limit, auto_reply_delay_seconds, handoff_agent_id, embeddings_api_key'
 
 /**
  * Load and decrypt the account's AI config for *use* (draft or
@@ -77,6 +79,8 @@ export async function loadAiConfig(
     isActive: row.is_active,
     autoReplyEnabled: row.auto_reply_enabled,
     autoReplyMaxPerConversation: row.auto_reply_max_per_conversation,
+    contextMessageLimit: row.context_message_limit ?? 20,
+    autoReplyDelaySeconds: row.auto_reply_delay_seconds ?? 5,
     handoffAgentId: row.handoff_agent_id,
     embeddingsApiKey,
   }

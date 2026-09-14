@@ -39,6 +39,8 @@ import {
   X,
   DollarSign,
   LayoutTemplate,
+  Sparkles,
+  RefreshCw,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -62,6 +64,10 @@ export function ContactDetailView({
   const [contact, setContact] = useState<Contact | null>(null);
   const [loading, setLoading] = useState(false);
   const [copiedPhone, setCopiedPhone] = useState(false);
+
+  const [aiSummary, setAiSummary] = useState<string | null>(null);
+  const [aiSummaryUpdatedAt, setAiSummaryUpdatedAt] = useState<string | null>(null);
+  const [generatingSummary, setGeneratingSummary] = useState(false);
 
   // Send template — lets the business initiate (or re-open) a conversation
   // with this contact by sending an approved template. The send route
@@ -113,6 +119,8 @@ export function ContactDetailView({
       setEditPhone(data.phone);
       setEditEmail(data.email ?? '');
       setEditCompany(data.company ?? '');
+      setAiSummary(data.ai_summary ?? null);
+      setAiSummaryUpdatedAt(data.ai_summary_updated_at ?? null);
     }
     setLoading(false);
   }, [contactId, supabase]);
@@ -189,6 +197,31 @@ export function ContactDetailView({
       fetchDeals();
     }
   }, [open, contactId, fetchContact, fetchTags, fetchNotes, fetchCustomFields, fetchDeals]);
+
+  async function handleGenerateSummary() {
+    if (!contactId) return;
+    setGeneratingSummary(true);
+    try {
+      const res = await fetch('/api/ai/summary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contactId }),
+      });
+      const data = await res.json();
+      if (res.ok && data.ai_summary) {
+        setAiSummary(data.ai_summary);
+        setAiSummaryUpdatedAt(data.ai_summary_updated_at);
+        toast.success('Resumo de IA atualizado!');
+        onUpdated();
+      } else {
+        toast.error(data.error ?? 'Não foi possível gerar o resumo.');
+      }
+    } catch {
+      toast.error('Falha de conexão com a IA.');
+    } finally {
+      setGeneratingSummary(false);
+    }
+  }
 
   async function copyPhone() {
     if (!contact) return;
@@ -454,42 +487,177 @@ export function ContactDetailView({
 
             {/* Tabs */}
             <Tabs defaultValue="details" className="flex-1 flex flex-col min-h-0">
-              <TabsList className="bg-muted/50 border-b border-border mx-4 mt-3">
-                <TabsTrigger
-                  value="details"
-                  className="data-active:bg-muted data-active:text-primary text-muted-foreground"
-                >
-                  {t('tabs.details')}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="tags"
-                  className="data-active:bg-muted data-active:text-primary text-muted-foreground"
-                >
-                  {t('tabs.tags')}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="notes"
-                  className="data-active:bg-muted data-active:text-primary text-muted-foreground"
-                >
-                  {t('tabs.notes')}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="custom"
-                  className="data-active:bg-muted data-active:text-primary text-muted-foreground"
-                >
-                  {t('tabs.custom')}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="deals"
-                  className="data-active:bg-muted data-active:text-primary text-muted-foreground"
-                >
-                  {t('tabs.deals')}
-                </TabsTrigger>
-              </TabsList>
+              <div className="px-4 mt-3">
+                <TabsList className="flex flex-wrap h-auto group-data-horizontal/tabs:h-auto min-h-9 w-full items-center justify-start rounded-lg bg-muted/60 p-1.5 text-muted-foreground gap-1.5 border border-border/50">
+                  <TabsTrigger
+                    value="details"
+                    className="h-7 px-2.5 text-xs font-medium whitespace-nowrap data-active:bg-background data-active:text-primary data-active:shadow-xs cursor-pointer"
+                  >
+                    {t('tabs.details')}
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="summary"
+                    className="h-7 px-2.5 text-xs font-medium whitespace-nowrap data-active:bg-background data-active:text-primary data-active:shadow-xs flex items-center gap-1 cursor-pointer"
+                  >
+                    <Sparkles className="size-3 text-primary" />
+                    Resumo IA
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="tags"
+                    className="h-7 px-2.5 text-xs font-medium whitespace-nowrap data-active:bg-background data-active:text-primary data-active:shadow-xs cursor-pointer"
+                  >
+                    {t('tabs.tags')}
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="notes"
+                    className="h-7 px-2.5 text-xs font-medium whitespace-nowrap data-active:bg-background data-active:text-primary data-active:shadow-xs cursor-pointer"
+                  >
+                    {t('tabs.notes')}
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="custom"
+                    className="h-7 px-2.5 text-xs font-medium whitespace-nowrap data-active:bg-background data-active:text-primary data-active:shadow-xs cursor-pointer"
+                  >
+                    {t('tabs.custom')}
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="deals"
+                    className="h-7 px-2.5 text-xs font-medium whitespace-nowrap data-active:bg-background data-active:text-primary data-active:shadow-xs cursor-pointer"
+                  >
+                    {t('tabs.deals')}
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+
+              {/* Summary Tab */}
+              <TabsContent value="summary" className="flex-1 overflow-y-auto px-4 py-3">
+                <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+                      <Sparkles className="size-4" />
+                      Resumo do Atendimento (IA)
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleGenerateSummary}
+                      disabled={generatingSummary}
+                      className="border-primary/30 text-primary hover:bg-primary/10 text-xs h-7 gap-1"
+                    >
+                      {generatingSummary ? (
+                        <Loader2 className="size-3 animate-spin" />
+                      ) : (
+                        <RefreshCw className="size-3" />
+                      )}
+                      {aiSummary ? 'Atualizar' : 'Gerar'}
+                    </Button>
+                  </div>
+
+                  {aiSummary ? (
+                    <div>
+                      <p className="whitespace-pre-wrap text-xs text-foreground/90 leading-relaxed">
+                        {aiSummary}
+                      </p>
+                      {aiSummaryUpdatedAt && (
+                        <p className="mt-3 text-[10px] text-muted-foreground border-t border-border/40 pt-2">
+                          Atualizado em:{' '}
+                          {new Date(aiSummaryUpdatedAt).toLocaleDateString('pt-BR', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="py-6 text-center space-y-2">
+                      <p className="text-xs text-muted-foreground">
+                        Nenhum resumo gerado para este contato ainda.
+                      </p>
+                      <Button
+                        size="sm"
+                        onClick={handleGenerateSummary}
+                        disabled={generatingSummary}
+                        className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs gap-1.5"
+                      >
+                        {generatingSummary ? (
+                          <Loader2 className="size-3 animate-spin" />
+                        ) : (
+                          <Sparkles className="size-3" />
+                        )}
+                        Gerar Resumo com IA
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
 
               {/* Details Tab */}
               <TabsContent value="details" className="flex-1 overflow-y-auto px-4 py-3">
-                <div className="space-y-3">
+                <div className="space-y-4">
+                  {/* AI Summary Card */}
+                  <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-1.5 text-xs font-semibold text-primary">
+                        <Sparkles className="size-3.5" />
+                        Resumo do Atendimento (IA)
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleGenerateSummary}
+                        disabled={generatingSummary}
+                        className="flex items-center gap-1 text-[11px] text-primary hover:underline disabled:opacity-50 cursor-pointer"
+                      >
+                        {generatingSummary ? (
+                          <Loader2 className="size-3 animate-spin" />
+                        ) : (
+                          <RefreshCw className="size-3" />
+                        )}
+                        {aiSummary ? 'Atualizar' : 'Gerar'}
+                      </button>
+                    </div>
+
+                    {aiSummary ? (
+                      <div>
+                        <p className="whitespace-pre-wrap text-xs text-foreground/90 leading-relaxed">
+                          {aiSummary}
+                        </p>
+                        {aiSummaryUpdatedAt && (
+                          <p className="mt-2 text-[10px] text-muted-foreground">
+                            {new Date(aiSummaryUpdatedAt).toLocaleDateString('pt-BR', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-xs text-muted-foreground">
+                          Nenhum resumo gerado ainda.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={handleGenerateSummary}
+                          disabled={generatingSummary}
+                          className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline disabled:opacity-50 cursor-pointer"
+                        >
+                          {generatingSummary ? (
+                            <Loader2 className="size-3 animate-spin" />
+                          ) : (
+                            <Sparkles className="size-3" />
+                          )}
+                          Gerar resumo
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
                   <div className="space-y-1.5">
                     <Label className="text-muted-foreground text-xs">{t('name')}</Label>
                     <Input

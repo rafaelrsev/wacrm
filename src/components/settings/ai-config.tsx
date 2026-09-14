@@ -41,11 +41,13 @@ const HANDOFF_QUEUE = '__queue__';
 const PROVIDER_LABEL: Record<AiProvider, string> = {
   openai: 'OpenAI',
   anthropic: 'Anthropic (Claude)',
+  deepseek: 'DeepSeek',
 };
 
 const KEY_PLACEHOLDER: Record<AiProvider, string> = {
   openai: 'sk-...',
   anthropic: 'sk-ant-...',
+  deepseek: 'sk-...',
 };
 
 export function AiConfig() {
@@ -72,6 +74,8 @@ export function AiConfig() {
   const [isActive, setIsActive] = useState(false);
   const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
   const [maxPerConversation, setMaxPerConversation] = useState(3);
+  const [contextMessageLimit, setContextMessageLimit] = useState(20);
+  const [autoReplyDelaySeconds, setAutoReplyDelaySeconds] = useState(5);
   // Empty string = leave unassigned (shared queue).
   const [handoffAgentId, setHandoffAgentId] = useState('');
   const [members, setMembers] = useState<AccountMember[]>([]);
@@ -99,6 +103,8 @@ export function AiConfig() {
         setIsActive(data.is_active);
         setAutoReplyEnabled(data.auto_reply_enabled);
         setMaxPerConversation(data.auto_reply_max_per_conversation ?? 3);
+        setContextMessageLimit(data.context_message_limit ?? 20);
+        setAutoReplyDelaySeconds(data.auto_reply_delay_seconds ?? 5);
         setHandoffAgentId(data.handoff_agent_id ?? '');
         setHasStoredKey(Boolean(data.has_key));
         setApiKey(data.has_key ? MASKED_KEY : '');
@@ -131,6 +137,7 @@ export function AiConfig() {
     const isDefaultModel =
       model === AI_PROVIDER_DEFAULT_MODEL.openai ||
       model === AI_PROVIDER_DEFAULT_MODEL.anthropic ||
+      model === AI_PROVIDER_DEFAULT_MODEL.deepseek ||
       model.trim() === '';
     if (isDefaultModel) setModel(AI_PROVIDER_DEFAULT_MODEL[next]);
   };
@@ -150,6 +157,8 @@ export function AiConfig() {
     is_active: isActive,
     auto_reply_enabled: autoReplyEnabled,
     auto_reply_max_per_conversation: maxPerConversation,
+    context_message_limit: contextMessageLimit,
+    auto_reply_delay_seconds: autoReplyDelaySeconds,
     handoff_agent_id: handoffAgentId || null,
   });
 
@@ -280,6 +289,9 @@ export function AiConfig() {
                     <SelectItem value="openai">{PROVIDER_LABEL.openai}</SelectItem>
                     <SelectItem value="anthropic">
                       {PROVIDER_LABEL.anthropic}
+                    </SelectItem>
+                    <SelectItem value="deepseek">
+                      {PROVIDER_LABEL.deepseek}
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -449,6 +461,52 @@ export function AiConfig() {
                 onChange={(e) =>
                   setMaxPerConversation(
                     Math.min(20, Math.max(1, Number(e.target.value) || 1)),
+                  )
+                }
+                disabled={disabled || !autoReplyEnabled}
+                className="w-20"
+              />
+            </div>
+
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <Label htmlFor="ai-context-limit">{t('contextMessageLimit')}</Label>
+                <p className="text-xs text-muted-foreground">
+                  {t('contextMessageLimitDesc')}
+                </p>
+              </div>
+              <Input
+                id="ai-context-limit"
+                type="number"
+                min={1}
+                max={50}
+                value={contextMessageLimit}
+                onChange={(e) =>
+                  setContextMessageLimit(
+                    Math.min(50, Math.max(1, Number(e.target.value) || 1)),
+                  )
+                }
+                disabled={disabled}
+                className="w-20"
+              />
+            </div>
+
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <Label htmlFor="ai-delay">{t('autoReplyDelaySeconds')}</Label>
+                <p className="text-xs text-muted-foreground">
+                  {t('autoReplyDelaySecondsDesc')}
+                </p>
+              </div>
+              <Input
+                id="ai-delay"
+                type="number"
+                min={0}
+                max={600}
+                value={autoReplyDelaySeconds}
+                onChange={(e) =>
+                  setAutoReplyDelaySeconds(
+                    Math.min(600, Math.max(0, Number(e.target.value) || 0)),
                   )
                 }
                 disabled={disabled || !autoReplyEnabled}

@@ -349,12 +349,12 @@ export default function ContactsPage() {
             {totalCount > 0 ? t('subtitle', { count: totalCount }) : t('subtitleZero')}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {canEditSettings && (
             <Button
               variant="outline"
               onClick={() => setCustomFieldsOpen(true)}
-              className="border-border text-muted-foreground hover:bg-muted"
+              className="border-border text-muted-foreground hover:bg-muted text-xs sm:text-sm"
             >
               <SlidersHorizontal className="size-4" />
               {t('customFieldsBtn')}
@@ -365,7 +365,7 @@ export default function ContactsPage() {
             canAct={canEdit}
             gateReason="add or import contacts"
             onClick={() => setImportOpen(true)}
-            className="border-border text-muted-foreground hover:bg-muted"
+            className="border-border text-muted-foreground hover:bg-muted text-xs sm:text-sm"
           >
             <Upload className="size-4" />
             {t('importBtn')}
@@ -374,7 +374,7 @@ export default function ContactsPage() {
             canAct={canEdit}
             gateReason="add or import contacts"
             onClick={openAddForm}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs sm:text-sm"
           >
             <Plus className="size-4" />
             {t('addContactBtn')}
