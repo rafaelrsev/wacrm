@@ -127,6 +127,36 @@ function SignupPageInner() {
     );
   }
 
+  if (!inviteToken) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <Card className="w-full max-w-md border-border bg-card">
+          <CardHeader className="items-center text-center">
+            <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
+              <MessageSquare className="h-6 w-6" />
+            </div>
+            <CardTitle className="text-xl font-bold text-foreground">
+              Cadastro Restrito
+            </CardTitle>
+            <CardDescription className="text-sm text-muted-foreground pt-1">
+              A criação de novas contas no CRM é gerenciada exclusivamente pelo Administrador do Sistema.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-xs text-muted-foreground text-center">
+              Caso precise de um novo CRM ou de um usuário, entre em contato com o seu Administrador para obter o seu acesso.
+            </p>
+            <Link href="/login" className="block w-full">
+              <Button className="w-full bg-primary font-semibold text-primary-foreground hover:bg-primary/90">
+                Ir para a Página de Login
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md border-border bg-card">

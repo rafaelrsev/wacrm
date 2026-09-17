@@ -113,6 +113,15 @@ export async function sendPushForMessageEvent(
     }
   }
 
+  // Fetch account custom icon for push notification
+  const { data: accountData } = await db
+    .from('accounts')
+    .select('notification_icon_url, pwa_icon_url')
+    .eq('id', accountId)
+    .maybeSingle();
+
+  const accountIcon = accountData?.notification_icon_url || accountData?.pwa_icon_url || '/icon-192x192.png';
+
   let sentCount = 0;
 
   for (const sub of subscriptions) {
@@ -130,8 +139,8 @@ export async function sendPushForMessageEvent(
         title,
         body,
         url,
-        icon: event.contactAvatarUrl || '/icon-192x192.png',
-        badge: '/icon-192x192.png',
+        icon: event.contactAvatarUrl || accountIcon,
+        badge: accountIcon,
         tag: `conv-${event.conversationId}`,
         sound: pref.sound_enabled,
         vibrate: pref.vibrate_enabled,

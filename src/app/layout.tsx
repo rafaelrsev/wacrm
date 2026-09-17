@@ -14,6 +14,8 @@ import {
   STORAGE_KEY,
   THEME_IDS,
 } from "@/lib/themes";
+import { createClient } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/auth/admin";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -21,12 +23,53 @@ const inter = Inter({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const pwaName = process.env.NEXT_PUBLIC_PWA_NAME || "WACRM - WhatsApp CRM";
-  const pwaShortName = process.env.NEXT_PUBLIC_PWA_SHORT_NAME || "WACRM";
+  let pwaName = process.env.NEXT_PUBLIC_PWA_NAME || "WACRM - WhatsApp CRM";
+  let pwaShortName = process.env.NEXT_PUBLIC_PWA_SHORT_NAME || "WACRM";
   const pwaDescription =
     process.env.NEXT_PUBLIC_PWA_DESCRIPTION || "CRM e Inbox Compartilhado para WhatsApp.";
-  const pwaIcon = process.env.NEXT_PUBLIC_PWA_ICON || "/icon-192x192.png";
-  const pwaAppleIcon = process.env.NEXT_PUBLIC_PWA_APPLE_ICON || "/apple-touch-icon.png";
+  let pwaIcon = process.env.NEXT_PUBLIC_PWA_ICON || "/icon-192x192.png";
+  let manifestUrl = "/api/manifest";
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("account_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (profile?.account_id) {
+        const db = supabaseAdmin();
+        const { data: account } = await db
+          .from("accounts")
+          .select("pwa_name, pwa_icon_url, slug")
+          .eq("id", profile.account_id)
+          .maybeSingle();
+
+        if (account) {
+          if (account.pwa_name) {
+            pwaName = account.pwa_name;
+            pwaShortName = account.pwa_name.slice(0, 15);
+          }
+          if (account.pwa_icon_url) {
+            pwaIcon = account.pwa_icon_url;
+          }
+          if (account.slug) {
+            manifestUrl = `/api/manifest?slug=${encodeURIComponent(account.slug)}`;
+          } else {
+            manifestUrl = `/api/manifest?account_id=${encodeURIComponent(profile.account_id)}`;
+          }
+        }
+      }
+    }
+  } catch (_e) {
+    // Fallback
+  }
 
   return {
     title: {
@@ -34,7 +77,7 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s — ${pwaShortName}`,
     },
     description: pwaDescription,
-    manifest: "/manifest.webmanifest",
+    manifest: manifestUrl,
     appleWebApp: {
       capable: true,
       statusBarStyle: "default",
@@ -46,7 +89,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     icons: {
       icon: [{ url: pwaIcon }, { url: "/icon.svg" }],
-      apple: [{ url: pwaAppleIcon }],
+      apple: [{ url: pwaIcon }],
     },
     formatDetection: {
       email: false,

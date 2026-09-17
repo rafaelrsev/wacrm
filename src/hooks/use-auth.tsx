@@ -35,6 +35,7 @@ interface Profile {
   beta_features: string[];
   account_id: string | null;
   account_role: AccountRole | null;
+  is_super_admin: boolean;
 }
 
 interface AccountSummary {
@@ -43,6 +44,11 @@ interface AccountSummary {
   /** Default deal currency (ISO-4217). NOT NULL DEFAULT 'USD' in the
    *  DB (migration 021); narrowed to DEFAULT_CURRENCY when absent. */
   default_currency: string;
+  slug: string | null;
+  pwa_name: string | null;
+  pwa_icon_url: string | null;
+  notification_icon_url: string | null;
+  is_active: boolean;
 }
 
 /**
@@ -124,6 +130,8 @@ interface AuthContextValue {
   isAgent: boolean;
   /** True if `accountRole === 'viewer'`. */
   isViewer: boolean;
+  /** True if user has global platform Super Admin privileges. */
+  isSuperAdmin: boolean;
   /** True if the caller can manage members (admin+). */
   canManageMembers: boolean;
   /** True if the caller can edit account-wide settings (admin+). */
@@ -152,6 +160,7 @@ interface ProfileRow {
   beta_features: string[] | null;
   account_id: string | null;
   account_role: string | null;
+  is_super_admin: boolean | null;
 }
 
 /**
@@ -192,7 +201,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const result = await supabase
           .from("profiles")
           .select(
-            "id, full_name, email, avatar_url, role, beta_features, account_id, account_role",
+            "id, full_name, email, avatar_url, role, beta_features, account_id, account_role, is_super_admin",
           )
           .eq("user_id", userId)
           .maybeSingle();
@@ -239,7 +248,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .from("accounts")
             // default_currency added in migration 021; narrowed to the
             // USD fallback below for older schemas where it reads null.
-            .select("id, name, default_currency")
+            .select("id, name, default_currency, slug, pwa_name, pwa_icon_url, notification_icon_url, is_active")
             .eq("id", data.account_id)
             .maybeSingle();
           if (accountErr) {
@@ -254,6 +263,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               id: account.id,
               name: account.name,
               default_currency: account.default_currency ?? DEFAULT_CURRENCY,
+              slug: (account as unknown as { slug?: string | null }).slug ?? null,
+              pwa_name: (account as unknown as { pwa_name?: string | null }).pwa_name ?? null,
+              pwa_icon_url: (account as unknown as { pwa_icon_url?: string | null }).pwa_icon_url ?? null,
+              notification_icon_url: (account as unknown as { notification_icon_url?: string | null }).notification_icon_url ?? null,
+              is_active: (account as unknown as { is_active?: boolean }).is_active ?? true,
             };
           }
         }
@@ -280,6 +294,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           beta_features: data.beta_features ?? [],
           account_id: data.account_id ?? null,
           account_role: accountRole,
+          is_super_admin: data.is_super_admin ?? false,
         });
         setAccount(accountRow);
         if (!data.account_id || !accountRole) {
@@ -407,11 +422,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAdmin: role === "admin",
       isAgent: role === "agent",
       isViewer: role === "viewer",
+      isSuperAdmin: profile?.is_super_admin ?? false,
       canManageMembers: role ? canManageMembersFor(role) : false,
       canEditSettings: role ? canEditSettingsFor(role) : false,
       canSendMessages: role ? canSendMessagesFor(role) : false,
     };
-  }, [profile?.account_role, profile?.account_id]);
+  }, [profile?.account_role, profile?.account_id, profile?.is_super_admin]);
 
   // Signed out is not a broken account — the shell redirects to /login
   // before anything reads this.
@@ -478,6 +494,7 @@ export function useAuth(): AuthContextValue {
       isAdmin: false,
       isAgent: false,
       isViewer: false,
+      isSuperAdmin: false,
       canManageMembers: false,
       canEditSettings: false,
       canSendMessages: false,
