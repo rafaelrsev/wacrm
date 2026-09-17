@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { usePushNotifications } from "@/hooks/use-push-notifications";
+import { useTranslations } from "next-intl";
 
 // Icon per notification type. Only one type exists today
 // (conversation_assigned) but this keeps future types a one-line add.
@@ -20,6 +21,7 @@ const TYPE_ICON: Record<Notification["type"], typeof Bell> = {
 
 export default function NotificationsPage() {
   const router = useRouter();
+  const t = useTranslations("Notifications");
   const { accountId } = useAuth();
   const { isSubscribed, subscribe, loading: pushLoading } = usePushNotifications();
   const [notifications, setNotifications] = useState<Notification[] | null>(
@@ -106,11 +108,11 @@ export default function NotificationsPage() {
         .eq("id", id)
         .is("read_at", null);
       if (updateErr) {
-        toast.error("Failed to mark notification as read");
+        toast.error(t("toastMarkReadError"));
         load();
       }
     },
-    [load],
+    [load, t],
   );
 
   const handleClick = useCallback(
@@ -139,17 +141,17 @@ export default function NotificationsPage() {
       .is("read_at", null);
     setMarkingAll(false);
     if (updateErr) {
-      toast.error("Failed to mark all as read");
+      toast.error(t("toastMarkAllError"));
       load();
     }
-  }, [unreadIds.length, load]);
+  }, [unreadIds.length, load, t]);
 
   if (error) {
     return (
       <div className="flex h-64 flex-col items-center justify-center gap-2">
         <p className="text-sm text-destructive">{error}</p>
         <Button variant="outline" onClick={() => window.location.reload()}>
-          Retry
+          {t("retry")}
         </Button>
       </div>
     );
@@ -167,9 +169,9 @@ export default function NotificationsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Notifications</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("title")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Conversations other teammates assign to you show up here.
+            {t("subtitle")}
           </p>
         </div>
         <Button
@@ -183,7 +185,7 @@ export default function NotificationsPage() {
           ) : (
             <CheckCheck className="h-4 w-4" />
           )}
-          Mark all as read
+          {t("markAllRead")}
         </Button>
       </div>
 
@@ -194,11 +196,11 @@ export default function NotificationsPage() {
             <Smartphone className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-foreground">Notificações Push no Celular / PWA</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t("pwaBannerTitle")}</h3>
             <p className="text-xs text-muted-foreground">
               {isSubscribed
-                ? "Notificações push estão ativadas neste dispositivo."
-                : "Ative os avisos push para receber alertas quando chegar novas mensagens ou conversas."}
+                ? t("pwaBannerEnabled")
+                : t("pwaBannerDisabled")}
             </p>
           </div>
         </div>
@@ -206,7 +208,7 @@ export default function NotificationsPage() {
           {!isSubscribed && (
             <Button size="sm" onClick={subscribe} disabled={pushLoading} className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white">
               {pushLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bell className="h-4 w-4" />}
-              Ativar Aviso
+              {t("pwaBannerEnableBtn")}
             </Button>
           )}
           <Button
@@ -215,7 +217,7 @@ export default function NotificationsPage() {
             onClick={() => router.push('/settings?tab=push-notifications')}
             className="text-xs"
           >
-            Configurar Regras
+            {t("pwaBannerConfigBtn")}
           </Button>
         </div>
       </div>
@@ -226,11 +228,10 @@ export default function NotificationsPage() {
             <Bell className="h-6 w-6 text-primary" />
           </div>
           <p className="mt-3 text-sm font-medium text-foreground">
-            No notifications yet
+            {t("emptyTitle")}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            You&apos;ll see an alert here when someone assigns you a
-            conversation.
+            {t("emptyDesc")}
           </p>
         </div>
       ) : (

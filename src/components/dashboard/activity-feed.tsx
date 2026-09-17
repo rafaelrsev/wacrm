@@ -103,7 +103,7 @@ export function ActivityFeed({ items, loading }: ActivityFeedProps) {
                     <Icon className="h-3.5 w-3.5" />
                   </span>
                   <span className="min-w-0 flex-1 truncate text-sm text-foreground">
-                    {it.text}
+                    {formatActivityText(it, t)}
                   </span>
                   <span className="flex-shrink-0 text-xs text-muted-foreground tabular-nums">
                     {relativeTime(it.at, t)}
@@ -166,4 +166,19 @@ function relativeTime(iso: string, t: ReturnType<typeof useTranslations>): strin
   if (diffSec < 86400) return t('timeH', { hr: Math.floor(diffSec / 3600) })
   if (diffSec < 2_592_000) return t('timeD', { day: Math.floor(diffSec / 86400) })
   return new Date(iso).toLocaleDateString()
+}
+
+function formatActivityText(it: ActivityItem, t: ReturnType<typeof useTranslations>): string {
+  if (it.kind === 'message' && it.who) {
+    return t('newMessageFrom', { who: it.who })
+  }
+  if (it.kind === 'contact' && it.who) {
+    return t('newContact', { name: it.who })
+  }
+  if (it.kind === 'deal' && it.title) {
+    return it.stage
+      ? t('dealInStage', { title: it.title, stage: it.stage })
+      : t('dealUpdated', { title: it.title })
+  }
+  return it.text
 }

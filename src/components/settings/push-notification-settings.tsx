@@ -27,8 +27,10 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 export function PushNotificationSettings() {
+  const t = useTranslations('Settings.pushNotifications');
   const {
     isSupported,
     isStandalone,
@@ -109,13 +111,13 @@ export function PushNotificationSettings() {
       });
 
       if (!res.ok) {
-        toast.error('Erro ao salvar preferências de notificação.');
+        toast.error(t('toastSaveError'));
       } else {
-        toast.success('Regras de notificação atualizadas!');
+        toast.success(t('toastSaveSuccess'));
       }
     } catch (err) {
       console.error('Error saving preferences:', err);
-      toast.error('Erro de conexão ao salvar.');
+      toast.error(t('toastConnError'));
     } finally {
       setSavingPref(false);
     }
@@ -132,7 +134,7 @@ export function PushNotificationSettings() {
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
-    toast.success(`${label} copiada para a área de transferência!`);
+    toast.success(t('toastCopied', { label }));
   };
 
   if (loadingPref) {
@@ -151,10 +153,10 @@ export function PushNotificationSettings() {
       <div>
         <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
           <Smartphone className="h-5 w-5 text-primary" />
-          Notificações Push PWA & Celular
+          {t('title')}
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Receba alertas em tempo real no seu celular (iPhone ou Android) ou computador quando chegarem novas mensagens no CRM.
+          {t('subtitle')}
         </p>
       </div>
 
@@ -165,20 +167,20 @@ export function PushNotificationSettings() {
             <Info className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
             <div>
               <h3 className="text-sm font-semibold text-amber-500">
-                Instruções para Notificações no iPhone (iOS)
+                {t('iosTitle')}
               </h3>
               <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
-                A Apple exige 3 passos simples para o Push funcionar no seu iPhone/iPad (iOS 16.4+):
+                {t('iosSubtitle')}
               </p>
               <ol className="mt-2 text-xs space-y-1.5 text-foreground list-decimal list-inside">
-                <li>Abra este site no Safari do iPhone.</li>
+                <li>{t('iosStep1')}</li>
                 <li>
-                  Toque no botão <strong>Compartilhar</strong> (ícone do quadrado com seta no rodapé do Safari).
+                  {t('iosStep2Before')} <strong>{t('iosStep2Bold')}</strong> {t('iosStep2After')}
                 </li>
                 <li>
-                  Selecione <strong>Adicionar à Tela de Início</strong> (Add to Home Screen).
+                  {t('iosStep3Before')} <strong>{t('iosStep3Bold')}</strong> ({t('iosStep3Bracket')}).
                 </li>
-                <li>Abra o aplicativo através do ícone criado na tela inicial do seu celular e clique no botão abaixo.</li>
+                <li>{t('iosStep4')}</li>
               </ol>
             </div>
           </div>
@@ -190,21 +192,21 @@ export function PushNotificationSettings() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-base font-semibold text-foreground">Status do Dispositivo</span>
+              <span className="text-base font-semibold text-foreground">{t('deviceStatusTitle')}</span>
               {isSubscribed ? (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-                  <Check className="h-3.5 w-3.5" /> Ativado neste dispositivo
+                  <Check className="h-3.5 w-3.5" /> {t('deviceActive')}
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
-                  <BellOff className="h-3.5 w-3.5" /> Não ativado
+                  <BellOff className="h-3.5 w-3.5" /> {t('deviceInactive')}
                 </span>
               )}
             </div>
             <p className="text-xs text-muted-foreground">
               {permission === 'denied'
-                ? 'As permissões de notificação foram bloqueadas no seu navegador. Habilite-as nas configurações do site.'
-                : 'Clique no botão para autorizar o recebimento de avisos sonoros e pop-ups neste navegador.'}
+                ? t('permissionDeniedDesc')
+                : t('permissionAllowDesc')}
             </p>
           </div>
 
@@ -215,7 +217,7 @@ export function PushNotificationSettings() {
               onClick={playTestSound}
               className="gap-2 border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 font-medium"
             >
-              <Volume2 className="h-4 w-4" /> Testar Som
+              <Volume2 className="h-4 w-4" /> {t('btnTestSound')}
             </Button>
 
             {isSubscribed ? (
@@ -226,7 +228,7 @@ export function PushNotificationSettings() {
                   onClick={sendTestPush}
                   className="gap-2 border-primary/30 text-primary hover:bg-primary/10"
                 >
-                  <Send className="h-4 w-4" /> Notificação de Teste
+                  <Send className="h-4 w-4" /> {t('btnTestPush')}
                 </Button>
                 <Button
                   variant="ghost"
@@ -235,7 +237,7 @@ export function PushNotificationSettings() {
                   disabled={hookLoading}
                   className="text-destructive hover:bg-destructive/10"
                 >
-                  Desativar neste aparelho
+                  {t('btnDeactivateDevice')}
                 </Button>
               </>
             ) : (
@@ -249,7 +251,7 @@ export function PushNotificationSettings() {
                 ) : (
                   <Bell className="h-4 w-4" />
                 )}
-                Ativar Aviso / Notificações Push
+                {t('btnActivatePush')}
               </Button>
             )}
           </div>
@@ -261,10 +263,10 @@ export function PushNotificationSettings() {
         <div className="border-b border-border pb-4 flex items-center justify-between">
           <div>
             <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-              <Filter className="h-4 w-4 text-primary" /> Regras de Notificação Personalizadas
+              <Filter className="h-4 w-4 text-primary" /> {t('rulesTitle')}
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Configure quando e como você quer ser avisado sobre novas interações no CRM.
+              {t('rulesSubtitle')}
             </p>
           </div>
           {savingPref && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
@@ -274,11 +276,11 @@ export function PushNotificationSettings() {
           {/* Master & Message Toggles */}
           <div className="space-y-4 rounded-lg border border-border/60 bg-muted/30 p-4">
             <h4 className="text-xs font-semibold uppercase text-muted-foreground tracking-wider flex items-center gap-1.5">
-              <MessageSquare className="h-3.5 w-3.5" /> Tipos de Mensagem
+              <MessageSquare className="h-3.5 w-3.5" /> {t('messageTypesGroup')}
             </h4>
 
             <label className="flex items-center justify-between gap-3 cursor-pointer">
-              <span className="text-sm font-medium text-foreground">🔔 Ativar Notificações Push</span>
+              <span className="text-sm font-medium text-foreground">{t('toggleMasterPush')}</span>
               <input
                 type="checkbox"
                 checked={prefs.enabled}
@@ -288,7 +290,7 @@ export function PushNotificationSettings() {
             </label>
 
             <label className="flex items-center justify-between gap-3 cursor-pointer">
-              <span className="text-sm font-medium text-foreground">💬 Novas Mensagens</span>
+              <span className="text-sm font-medium text-foreground">{t('toggleNewMessages')}</span>
               <input
                 type="checkbox"
                 checked={prefs.notify_new_messages}
@@ -298,7 +300,7 @@ export function PushNotificationSettings() {
             </label>
 
             <label className="flex items-center justify-between gap-3 cursor-pointer">
-              <span className="text-sm font-medium text-foreground">🔕 Não notificar mensagens enviadas por você</span>
+              <span className="text-sm font-medium text-foreground">{t('toggleIgnoreSelfSent')}</span>
               <input
                 type="checkbox"
                 checked={!prefs.notify_self_sent}
@@ -308,7 +310,7 @@ export function PushNotificationSettings() {
             </label>
 
             <label className="flex items-center justify-between gap-3 cursor-pointer">
-              <span className="text-sm font-medium text-foreground">🔕 Não notificar grupos</span>
+              <span className="text-sm font-medium text-foreground">{t('toggleIgnoreGroups')}</span>
               <input
                 type="checkbox"
                 checked={!prefs.notify_groups}
@@ -318,7 +320,7 @@ export function PushNotificationSettings() {
             </label>
 
             <label className="flex items-center justify-between gap-3 cursor-pointer">
-              <span className="text-sm font-medium text-foreground">⏳ Notificar somente conversas sem atendimento</span>
+              <span className="text-sm font-medium text-foreground">{t('toggleUnattendedOnly')}</span>
               <input
                 type="checkbox"
                 checked={prefs.notify_unattended_only}
@@ -331,13 +333,13 @@ export function PushNotificationSettings() {
           {/* Device Behavior (Sound & Vibrate) */}
           <div className="space-y-4 rounded-lg border border-border/60 bg-muted/30 p-4">
             <h4 className="text-xs font-semibold uppercase text-muted-foreground tracking-wider flex items-center gap-1.5">
-              <Volume2 className="h-3.5 w-3.5" /> Som e Vibração do Celular
+              <Volume2 className="h-3.5 w-3.5" /> {t('soundVibrateGroup')}
             </h4>
 
             <div className="flex items-center justify-between gap-3">
               <label className="flex items-center gap-2 cursor-pointer">
                 {prefs.sound_enabled ? <Volume2 className="h-4 w-4 text-emerald-500" /> : <VolumeX className="h-4 w-4 text-muted-foreground" />}
-                <span className="text-sm font-medium text-foreground">Tocar som ao notificar</span>
+                <span className="text-sm font-medium text-foreground">{t('toggleSound')}</span>
               </label>
               <div className="flex items-center gap-3">
                 <Button
@@ -347,7 +349,7 @@ export function PushNotificationSettings() {
                   onClick={playTestSound}
                   className="h-7 text-xs gap-1.5 border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 px-2.5"
                 >
-                  <Volume2 className="h-3.5 w-3.5" /> Ouvir Som
+                  <Volume2 className="h-3.5 w-3.5" /> {t('btnPlaySound')}
                 </Button>
                 <input
                   type="checkbox"
@@ -360,7 +362,7 @@ export function PushNotificationSettings() {
 
             <label className="flex items-center justify-between gap-3 cursor-pointer">
               <span className="text-sm font-medium text-foreground flex items-center gap-2">
-                <Zap className="h-4 w-4 text-amber-500" /> Vibrar dispositivo
+                <Zap className="h-4 w-4 text-amber-500" /> {t('toggleVibrate')}
               </span>
               <input
                 type="checkbox"
@@ -373,7 +375,7 @@ export function PushNotificationSettings() {
             {/* Target user selector */}
             <div className="pt-2 border-t border-border/60 space-y-1.5">
               <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                <Users className="h-3.5 w-3.5 text-primary" /> Quem notificar neste CRM?
+                <Users className="h-3.5 w-3.5 text-primary" /> {t('whoToNotifyLabel')}
               </label>
               <select
                 value={prefs.target_user_mode}
@@ -385,10 +387,10 @@ export function PushNotificationSettings() {
                 className="w-full text-xs rounded-md border border-border bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
               >
                 <option value="assigned_or_all">
-                  🎯 Responsável da conversa (ou Todos se a conversa for sem atendente)
+                  {t('targetModeAssignedOrAll')}
                 </option>
-                <option value="assigned_only">👤 Apenas o Responsável atribuído à conversa</option>
-                <option value="all_members">📢 Todos os membros da equipe (Inbox Compartilhado)</option>
+                <option value="assigned_only">{t('targetModeAssignedOnly')}</option>
+                <option value="all_members">{t('targetModeAllMembers')}</option>
               </select>
             </div>
           </div>
@@ -399,7 +401,7 @@ export function PushNotificationSettings() {
           <div className="flex items-center justify-between">
             <label className="flex items-center gap-2 cursor-pointer">
               <Clock className="h-4 w-4 text-primary" />
-              <span className="text-sm font-semibold text-foreground">Horário de Notificação (Silenciar Fora do Horário)</span>
+              <span className="text-sm font-semibold text-foreground">{t('quietHoursTitle')}</span>
             </label>
             <input
               type="checkbox"
@@ -411,7 +413,7 @@ export function PushNotificationSettings() {
 
           {prefs.quiet_hours_enabled && (
             <div className="pt-2 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-              <span>Notificar somente no horário entre:</span>
+              <span>{t('quietHoursRangePrefix')}</span>
               <div className="flex items-center gap-2">
                 <input
                   type="time"
@@ -419,7 +421,7 @@ export function PushNotificationSettings() {
                   onChange={(e) => savePreferences({ quiet_hours_start: e.target.value })}
                   className="rounded border border-border bg-background px-2 py-1 text-foreground focus:ring-1 focus:ring-primary"
                 />
-                <span>até</span>
+                <span>{t('quietHoursRangeTo')}</span>
                 <input
                   type="time"
                   value={prefs.quiet_hours_end}
@@ -436,7 +438,7 @@ export function PushNotificationSettings() {
           <div className="flex items-center justify-between">
             <label className="flex items-center gap-2 cursor-pointer">
               <Key className="h-4 w-4 text-primary" />
-              <span className="text-sm font-semibold text-foreground">🔔 Notificar apenas determinadas palavras-chave</span>
+              <span className="text-sm font-semibold text-foreground">{t('keywordsTitle')}</span>
             </label>
             <input
               type="checkbox"
@@ -450,14 +452,14 @@ export function PushNotificationSettings() {
             <div className="space-y-2 pt-1">
               <input
                 type="text"
-                placeholder="Ex: urgente, suporte, orcamento, comprar (separadas por vírgula)"
+                placeholder={t('keywordsPlaceholder')}
                 value={keywordInput}
                 onChange={(e) => setKeywordInput(e.target.value)}
                 onBlur={handleKeywordsBlur}
                 className="w-full text-xs rounded-md border border-border bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
               />
               <p className="text-[11px] text-muted-foreground">
-                Insira as palavras separadas por vírgula. O CRM só enviará push para mensagens que contenham pelo menos um desses termos.
+                {t('keywordsHint')}
               </p>
             </div>
           )}
@@ -469,32 +471,32 @@ export function PushNotificationSettings() {
         <div className="flex items-center justify-between border-b border-border pb-3">
           <div>
             <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-              <Lock className="h-4 w-4 text-primary" /> Status do Servidor VAPID
+              <Lock className="h-4 w-4 text-primary" /> {t('vapidTitle')}
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Status da configuração do protocolo de autenticação Web Push.
+              {t('vapidSubtitle')}
             </p>
           </div>
           {vapidInfo?.configured ? (
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-              <Check className="h-3 w-3" /> VAPID Configurado
+              <Check className="h-3 w-3" /> {t('vapidConfigured')}
             </span>
           ) : (
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/15 text-amber-600 dark:text-amber-400">
-              <ShieldAlert className="h-3 w-3" /> Chaves Pendentes
+              <ShieldAlert className="h-3 w-3" /> {t('vapidPending')}
             </span>
           )}
         </div>
 
         {/* SSL vs VAPID Explanation */}
         <div className="rounded-lg bg-muted/40 p-4 space-y-2 text-xs text-muted-foreground leading-relaxed">
-          <p className="font-semibold text-foreground">💡 Esclarecimento sobre SSL & VAPID:</p>
+          <p className="font-semibold text-foreground">{t('explanationHeader')}</p>
           <ul className="list-disc list-inside space-y-1">
             <li>
-              <strong>Chave SSL (Let&apos;s Encrypt da Hostinger)</strong>: Criptografa o seu site HTTPS. O SSL é obrigatório para qualquer navegador permitir PWA e Service Worker.
+              <strong>{t('explanationSslTitle')}</strong>: {t('explanationSslDesc')}
             </li>
             <li>
-              <strong>Chaves VAPID</strong>: São as chaves configuradas via variáveis de ambiente no arquivo <code>.env</code> do servidor para autenticação com os serviços de push da Apple (APNs) e Google (FCM).
+              <strong>{t('explanationVapidTitle')}</strong>: {t('explanationVapidDesc')}
             </li>
           </ul>
         </div>

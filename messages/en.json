@@ -96,7 +96,11 @@
       "timeS": "{sec}s ago",
       "timeM": "{min}m ago",
       "timeH": "{hr}h ago",
-      "timeD": "{day}d ago"
+      "timeD": "{day}d ago",
+      "newMessageFrom": "New message from {who}",
+      "newContact": "New contact: {name}",
+      "dealInStage": "Deal \"{title}\" in {stage}",
+      "dealUpdated": "Deal \"{title}\" updated"
     },
     "conversationsChart": {
       "title": "Conversations Over Time",
@@ -803,7 +807,40 @@
       }
     }
   },
+  "Notifications": {
+    "title": "Notifications",
+    "subtitle": "Conversations other teammates assign to you show up here.",
+    "markAllRead": "Mark all as read",
+    "retry": "Retry",
+    "emptyTitle": "No notifications yet",
+    "emptyDesc": "You'll see an alert here when someone assigns you a conversation.",
+    "pwaBannerTitle": "PWA & Mobile Push Notifications",
+    "pwaBannerEnabled": "Push notifications are enabled on this device.",
+    "pwaBannerDisabled": "Enable push notifications to get real-time alerts when new messages arrive.",
+    "pwaBannerEnableBtn": "Enable Notifications",
+    "pwaBannerConfigBtn": "Configure Rules",
+    "toastMarkReadError": "Failed to mark notification as read",
+    "toastMarkAllError": "Failed to mark all as read"
+  },
   "Automations": {
+    "templates": {
+      "welcome_message": {
+        "name": "Welcome Message",
+        "description": "Auto-reply to first-time contacts with a greeting."
+      },
+      "out_of_office": {
+        "name": "Out of Office",
+        "description": "Auto-reply during off-hours so nobody is left waiting."
+      },
+      "lead_qualifier": {
+        "name": "Lead Qualifier",
+        "description": "Ask qualification questions to filter inbound leads."
+      },
+      "follow_up_reminder": {
+        "name": "Follow-up Reminder",
+        "description": "Send a nudge if a contact has not replied within 24 hours."
+      }
+    },
     "list": {
       "title": "Automations",
       "subtitle": "Build workflows that react to WhatsApp® events automatically.",
@@ -1239,6 +1276,64 @@
   "Settings": {
     "pageTitle": "Settings",
     "pageDesc": "Everything in one place — your account and your workspace. Pick a section to manage it.",
+    "pushNotifications": {
+      "title": "PWA & Mobile Push Notifications",
+      "subtitle": "Receive real-time alerts on your phone (iPhone or Android) or computer when new messages arrive in the CRM.",
+      "iosTitle": "Instructions for Notifications on iPhone (iOS)",
+      "iosSubtitle": "Apple requires 3 simple steps for Push to work on your iPhone/iPad (iOS 16.4+):",
+      "iosStep1": "Open this website in Safari on your iPhone.",
+      "iosStep2Before": "Tap the",
+      "iosStep2Bold": "Share",
+      "iosStep2After": "button (square with arrow icon at the bottom of Safari).",
+      "iosStep3Before": "Select",
+      "iosStep3Bold": "Add to Home Screen",
+      "iosStep3Bracket": "Add to Home Screen",
+      "iosStep4": "Open the application via the icon created on your home screen and tap the button below.",
+      "deviceStatusTitle": "Device Status",
+      "deviceActive": "Active on this device",
+      "deviceInactive": "Not active",
+      "permissionDeniedDesc": "Notification permissions were blocked in your browser. Enable them in site settings.",
+      "permissionAllowDesc": "Click the button to authorize sound alerts and pop-ups in this browser.",
+      "btnTestSound": "Test Sound",
+      "btnTestPush": "Test Notification",
+      "btnDeactivateDevice": "Deactivate on this device",
+      "btnActivatePush": "Enable Push Notifications",
+      "rulesTitle": "Custom Notification Rules",
+      "rulesSubtitle": "Configure when and how you want to be notified about new interactions in the CRM.",
+      "messageTypesGroup": "Message Types",
+      "toggleMasterPush": "🔔 Enable Push Notifications",
+      "toggleNewMessages": "💬 New Messages",
+      "toggleIgnoreSelfSent": "🔕 Do not notify messages sent by you",
+      "toggleIgnoreGroups": "🔕 Do not notify groups",
+      "toggleUnattendedOnly": "⏳ Notify only unattended conversations",
+      "soundVibrateGroup": "Device Sound & Vibration",
+      "toggleSound": "Play sound when notifying",
+      "btnPlaySound": "Listen Sound",
+      "toggleVibrate": "Vibrate device",
+      "whoToNotifyLabel": "Who to notify in this CRM?",
+      "targetModeAssignedOrAll": "🎯 Conversation assignee (or Everyone if conversation is unassigned)",
+      "targetModeAssignedOnly": "👤 Only the assignee assigned to the conversation",
+      "targetModeAllMembers": "📢 All team members (Shared Inbox)",
+      "quietHoursTitle": "Notification Schedule (Mute Off-Hours)",
+      "quietHoursRangePrefix": "Notify only during hours between:",
+      "quietHoursRangeTo": "to",
+      "keywordsTitle": "🔔 Notify only specific keywords",
+      "keywordsPlaceholder": "E.g.: urgent, support, quote, buy (separated by comma)",
+      "keywordsHint": "Enter keywords separated by comma. The CRM will only send push for messages containing at least one of these terms.",
+      "vapidTitle": "VAPID Server Status",
+      "vapidSubtitle": "Configuration status of Web Push authentication protocol.",
+      "vapidConfigured": "VAPID Configured",
+      "vapidPending": "Keys Pending",
+      "explanationHeader": "💡 Explanation on SSL & VAPID:",
+      "explanationSslTitle": "SSL Key (Let's Encrypt / Hostinger)",
+      "explanationSslDesc": "Encrypts your HTTPS website. SSL is mandatory for browsers to allow PWA and Service Worker.",
+      "explanationVapidTitle": "VAPID Keys",
+      "explanationVapidDesc": "Keys configured via environment variables in the server's .env file for authentication with Apple (APNs) and Google (FCM) push services.",
+      "toastSaveError": "Failed to save notification preferences.",
+      "toastSaveSuccess": "Notification rules updated!",
+      "toastConnError": "Connection error while saving.",
+      "toastCopied": "{label} copied to clipboard!"
+    },
     "overview": {
       "notSetup": "Not set up yet",
       "connected": "Connected",

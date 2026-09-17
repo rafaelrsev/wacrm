@@ -64,4 +64,8 @@ export interface ActivityItem {
   at: string
   /** Optional deep-link for the whole row (not all items have a target). */
   href?: string
+  /** Optional structured parameters for localization */
+  who?: string
+  title?: string
+  stage?: string
 }

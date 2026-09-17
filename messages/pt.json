@@ -96,7 +96,11 @@
       "timeS": "há {sec}s",
       "timeM": "há {min}m",
       "timeH": "há {hr}h",
-      "timeD": "há {day}d"
+      "timeD": "há {day}d",
+      "newMessageFrom": "Nova mensagem de {who}",
+      "newContact": "Novo contato: {name}",
+      "dealInStage": "Negócio \"{title}\" em {stage}",
+      "dealUpdated": "Negócio \"{title}\" atualizado"
     },
     "conversationsChart": {
       "title": "Conversas ao Longo do Tempo",
@@ -803,7 +807,40 @@
       }
     }
   },
+  "Notifications": {
+    "title": "Notificações",
+    "subtitle": "Conversas atribuídas a você por outros membros da equipe aparecem aqui.",
+    "markAllRead": "Marcar todas como lidas",
+    "retry": "Tentar novamente",
+    "emptyTitle": "Nenhuma notificação ainda",
+    "emptyDesc": "Você verá um alerta aqui quando alguém lhe atribuir uma conversa.",
+    "pwaBannerTitle": "Notificações Push no Celular / PWA",
+    "pwaBannerEnabled": "Notificações push estão ativadas neste dispositivo.",
+    "pwaBannerDisabled": "Ative os avisos push para receber alertas quando chegar novas mensagens ou conversas.",
+    "pwaBannerEnableBtn": "Ativar Aviso",
+    "pwaBannerConfigBtn": "Configurar Regras",
+    "toastMarkReadError": "Falha ao marcar notificação como lida",
+    "toastMarkAllError": "Falha ao marcar todas como lidas"
+  },
   "Automations": {
+    "templates": {
+      "welcome_message": {
+        "name": "Mensagem de Boas-vindas",
+        "description": "Resposta automática com saudação para novos contatos."
+      },
+      "out_of_office": {
+        "name": "Fora do Expediente",
+        "description": "Resposta automática fora do horário de atendimento."
+      },
+      "lead_qualifier": {
+        "name": "Qualificador de Leads",
+        "description": "Faça perguntas de qualificação para filtrar novos leads."
+      },
+      "follow_up_reminder": {
+        "name": "Lembrete de Acompanhamento",
+        "description": "Envie um lembrete se o contato não responder em até 24 horas."
+      }
+    },
     "list": {
       "title": "Automações",
       "subtitle": "Crie fluxos de trabalho que reagem a eventos do WhatsApp® automaticamente.",
@@ -1239,6 +1276,64 @@
   "Settings": {
     "pageTitle": "Configurações",
     "pageDesc": "Tudo em um só lugar — sua conta e seu espaço de trabalho. Escolha uma seção para gerenciar.",
+    "pushNotifications": {
+      "title": "Notificações Push PWA & Celular",
+      "subtitle": "Receba alertas em tempo real no seu celular (iPhone ou Android) ou computador quando chegarem novas mensagens no CRM.",
+      "iosTitle": "Instruções para Notificações no iPhone (iOS)",
+      "iosSubtitle": "A Apple exige 3 passos simples para o Push funcionar no seu iPhone/iPad (iOS 16.4+):",
+      "iosStep1": "Abra este site no Safari do iPhone.",
+      "iosStep2Before": "Toque no botão",
+      "iosStep2Bold": "Compartilhar",
+      "iosStep2After": "(ícone do quadrado com seta no rodapé do Safari).",
+      "iosStep3Before": "Selecione",
+      "iosStep3Bold": "Adicionar à Tela de Início",
+      "iosStep3Bracket": "Add to Home Screen",
+      "iosStep4": "Abra o aplicativo através do ícone criado na tela inicial do seu celular e clique no botão abaixo.",
+      "deviceStatusTitle": "Status do Dispositivo",
+      "deviceActive": "Ativado neste dispositivo",
+      "deviceInactive": "Não ativado",
+      "permissionDeniedDesc": "As permissões de notificação foram bloqueadas no seu navegador. Habilite-as nas configurações do site.",
+      "permissionAllowDesc": "Clique no botão para autorizar o recebimento de avisos sonoros e pop-ups neste navegador.",
+      "btnTestSound": "Testar Som",
+      "btnTestPush": "Notificação de Teste",
+      "btnDeactivateDevice": "Desativar neste aparelho",
+      "btnActivatePush": "Ativar Aviso / Notificações Push",
+      "rulesTitle": "Regras de Notificação Personalizadas",
+      "rulesSubtitle": "Configure quando e como você quer ser avisado sobre novas interações no CRM.",
+      "messageTypesGroup": "Tipos de Mensagem",
+      "toggleMasterPush": "🔔 Ativar Notificações Push",
+      "toggleNewMessages": "💬 Novas Mensagens",
+      "toggleIgnoreSelfSent": "🔕 Não notificar mensagens enviadas por você",
+      "toggleIgnoreGroups": "🔕 Não notificar grupos",
+      "toggleUnattendedOnly": "⏳ Notificar somente conversas sem atendimento",
+      "soundVibrateGroup": "Som e Vibração do Celular",
+      "toggleSound": "Tocar som ao notificar",
+      "btnPlaySound": "Ouvir Som",
+      "toggleVibrate": "Vibrar dispositivo",
+      "whoToNotifyLabel": "Quem notificar neste CRM?",
+      "targetModeAssignedOrAll": "🎯 Responsável da conversa (ou Todos se a conversa for sem atendente)",
+      "targetModeAssignedOnly": "👤 Apenas o Responsável atribuído à conversa",
+      "targetModeAllMembers": "📢 Todos os membros da equipe (Inbox Compartilhado)",
+      "quietHoursTitle": "Horário de Notificação (Silenciar Fora do Horário)",
+      "quietHoursRangePrefix": "Notificar somente no horário entre:",
+      "quietHoursRangeTo": "até",
+      "keywordsTitle": "🔔 Notificar apenas determinadas palavras-chave",
+      "keywordsPlaceholder": "Ex: urgente, suporte, orcamento, comprar (separadas por vírgula)",
+      "keywordsHint": "Insira as palavras separadas por vírgula. O CRM só enviará push para mensagens que contenham pelo menos um desses termos.",
+      "vapidTitle": "Status do Servidor VAPID",
+      "vapidSubtitle": "Status da configuração do protocolo de autenticação Web Push.",
+      "vapidConfigured": "VAPID Configurado",
+      "vapidPending": "Chaves Pendentes",
+      "explanationHeader": "💡 Esclarecimento sobre SSL & VAPID:",
+      "explanationSslTitle": "Chave SSL (Let's Encrypt da Hostinger)",
+      "explanationSslDesc": "Criptografa o seu site HTTPS. O SSL é obrigatório para qualquer navegador permitir PWA e Service Worker.",
+      "explanationVapidTitle": "Chaves VAPID",
+      "explanationVapidDesc": "São as chaves configuradas via variáveis de ambiente no arquivo .env do servidor para autenticação com os serviços de push da Apple (APNs) e Google (FCM).",
+      "toastSaveError": "Erro ao salvar preferências de notificação.",
+      "toastSaveSuccess": "Regras de notificação atualizadas!",
+      "toastConnError": "Erro de conexão ao salvar.",
+      "toastCopied": "{label} copiada para a área de transferência!"
+    },
     "overview": {
       "notSetup": "Não configurado ainda",
       "connected": "Conectado",

@@ -319,16 +319,19 @@ export async function loadActivity(db: DB, limit = 20): Promise<ActivityItem[]> 
       id: `msg-${m.id}`,
       kind: 'message',
       text: `New message from ${who}`,
+      who,
       at: m.created_at,
       href: `/inbox?c=${m.conversation_id}`,
     })
   }
 
   for (const c of (contacts.data ?? []) as Array<{ id: string; name: string | null; phone: string; created_at: string }>) {
+    const who = c.name || c.phone
     items.push({
       id: `contact-${c.id}`,
       kind: 'contact',
-      text: `New contact: ${c.name || c.phone}`,
+      text: `New contact: ${who}`,
+      who,
       at: c.created_at,
       href: '/contacts',
     })
@@ -347,6 +350,8 @@ export async function loadActivity(db: DB, limit = 20): Promise<ActivityItem[]> 
       text: stage?.name
         ? `Deal "${d.title}" in ${stage.name}`
         : `Deal "${d.title}" updated`,
+      title: d.title,
+      stage: stage?.name,
       at: d.updated_at,
       href: '/pipelines',
     })
@@ -367,6 +372,7 @@ export async function loadActivity(db: DB, limit = 20): Promise<ActivityItem[]> 
       id: `broadcast-${b.id}`,
       kind: 'broadcast',
       text: `Broadcast "${b.name}" ${label}`,
+      title: b.name,
       at: b.created_at,
       href: '/broadcasts',
     })
@@ -388,6 +394,8 @@ export async function loadActivity(db: DB, limit = 20): Promise<ActivityItem[]> 
       id: `auto-${l.id}`,
       kind: 'automation',
       text: `Automation "${autoName}" ${l.status === 'failed' ? 'failed for' : 'triggered for'} ${who}`,
+      title: autoName,
+      who,
       at: l.created_at,
     })
   }

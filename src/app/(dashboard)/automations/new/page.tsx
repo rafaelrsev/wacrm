@@ -11,6 +11,8 @@ import {
 import { AUTOMATION_TEMPLATES, type TemplateSlug } from "@/lib/automations/templates"
 import type { AutomationStepType, AutomationTriggerType } from "@/types"
 
+import { useTranslations } from "next-intl"
+
 // `useSearchParams` requires a Suspense boundary or the production build
 // bails to CSR and errors out. Thin wrapper supplies it; the inner
 // component reads the `?template=` query string.
@@ -25,6 +27,7 @@ export default function NewAutomationPage() {
 function NewAutomationPageInner() {
   const params = useSearchParams()
   const template = params.get("template") as TemplateSlug | null
+  const tTemplates = useTranslations("Automations.templates")
 
   const initial: BuilderInitial = useMemo(() => {
     if (template && AUTOMATION_TEMPLATES[template]) {
@@ -39,8 +42,8 @@ function NewAutomationPageInner() {
         })),
       )
       return {
-        name: t.name,
-        description: t.description,
+        name: tTemplates(`${template}.name`),
+        description: tTemplates(`${template}.description`),
         trigger_type: t.trigger_type,
         trigger_config: t.trigger_config as Record<string, unknown>,
         is_active: false,
