@@ -66,6 +66,8 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
     name,
     short_name: shortName,
     description: 'CRM e Inbox Compartilhado para WhatsApp',
+    lang: 'pt-BR',
+    dir: 'ltr',
     start_url: startUrl,
     display: 'standalone',
     background_color: '#0f172a',
