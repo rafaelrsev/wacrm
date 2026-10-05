@@ -1757,7 +1757,7 @@
     },
     "aiConfig": {
       "title": "Configuração do Agente",
-      "description": "Utilize sua própria chave da OpenAI, Anthropic ou DeepSeek. O wacrm conecta diretamente com seu provedor.",
+      "description": "Utilize sua própria chave da OpenAI, Anthropic, DeepSeek ou OpenRouter. O wacrm conecta diretamente com seu provedor.",
       "adminOnlyConfig": "Apenas admins e proprietários podem alterar a configuração de IA.",
       "loadFailed": "Falha ao carregar configuração de IA",
       "providerAndKey": "Provedor & chave",

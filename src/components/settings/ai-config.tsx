@@ -42,12 +42,14 @@ const PROVIDER_LABEL: Record<AiProvider, string> = {
   openai: 'OpenAI',
   anthropic: 'Anthropic (Claude)',
   deepseek: 'DeepSeek',
+  openrouter: 'OpenRouter',
 };
 
 const KEY_PLACEHOLDER: Record<AiProvider, string> = {
   openai: 'sk-...',
   anthropic: 'sk-ant-...',
   deepseek: 'sk-...',
+  openrouter: 'sk-or-v1-...',
 };
 
 export function AiConfig() {
@@ -138,6 +140,7 @@ export function AiConfig() {
       model === AI_PROVIDER_DEFAULT_MODEL.openai ||
       model === AI_PROVIDER_DEFAULT_MODEL.anthropic ||
       model === AI_PROVIDER_DEFAULT_MODEL.deepseek ||
+      model === AI_PROVIDER_DEFAULT_MODEL.openrouter ||
       model.trim() === '';
     if (isDefaultModel) setModel(AI_PROVIDER_DEFAULT_MODEL[next]);
   };
@@ -292,6 +295,9 @@ export function AiConfig() {
                     </SelectItem>
                     <SelectItem value="deepseek">
                       {PROVIDER_LABEL.deepseek}
+                    </SelectItem>
+                    <SelectItem value="openrouter">
+                      {PROVIDER_LABEL.openrouter}
                     </SelectItem>
                   </SelectContent>
                 </Select>

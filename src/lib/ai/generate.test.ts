@@ -221,3 +221,30 @@ describe('generateReply — DeepSeek', () => {
     expect(opts.headers.Authorization).toBe('Bearer sk-ds-test')
   })
 })
+
+describe('generateReply — OpenRouter', () => {
+  it('calls the OpenRouter chat completions endpoint', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      okResponse({
+        choices: [{ message: { content: 'OpenRouter response!' } }],
+        usage: { prompt_tokens: 15, completion_tokens: 10, total_tokens: 25 },
+      }),
+    )
+    vi.stubGlobal('fetch', fetchMock)
+
+    const res = await generateReply({
+      config: config({ provider: 'openrouter', model: 'openrouter/free', apiKey: 'sk-or-v1-test' }),
+      systemPrompt: 'sys',
+      messages: [{ role: 'user', content: 'Hello' }],
+    })
+
+    expect(res).toEqual({
+      text: 'OpenRouter response!',
+      handoff: false,
+      usage: { promptTokens: 15, completionTokens: 10, totalTokens: 25 },
+    })
+    const [url, opts] = fetchMock.mock.calls[0]
+    expect(url).toContain('openrouter.ai')
+    expect(opts.headers.Authorization).toBe('Bearer sk-or-v1-test')
+  })
+})
